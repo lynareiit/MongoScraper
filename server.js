@@ -1,4 +1,4 @@
-var require = require('request');
+var request = require('request');
 var express = require('express');
 var exphbs = require('express-handlebars');
 var bodyParser = require('body-parser');
@@ -6,10 +6,7 @@ var mongoose = require('mongoose');
 
 const cheerio = require('cheerio');
 
-var PORT = 3000;
-
-// // require all files in models folder
-var db = require("./models");
+var PORT = process.env.PORT || 3000;
 
 // initialize express
 var app = express();
@@ -19,6 +16,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
+
+// require all files in models folder
+var db = require("./models");
 
 // Database configuration
 var databaseURL = "scraper";
@@ -31,23 +31,21 @@ var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI, {
-    useMongoClient: true
-});
+mongoose.connect(MONGODB_URI);
 
 // Hook the mongojs configuration to the db variable
-var db = mongojs(databaseURL, collections);
-db.on("error", function(err) {
-    console.log("Database Error:", error);
-});
+// var db = mongojs(databaseURL, collections);
+// db.on("error", function(err) {
+//     console.log("Database Error:", error);
+// });
 
 // ---------------> NEED TO .GET FOR ALL SCRAPING <------------------------
 // ---------------> NEED TO .POST AFTER FOR ALL POSTING TO SCRAPED ARTICLES <------------------------
 
-
-// app.get("/", function(req, res) {
-//     res.send("Hi what goes here?")
-// });
+// Main route for the main html screen
+app.get("/", function(req, res) {
+    res.send("I'm Home");
+});
 
 // Retrieve the data here from the database
 app.get("/all", function(req, res) {
@@ -61,9 +59,10 @@ app.get("/all", function(req, res) {
         }
     });
 });
+
 // Scrape data to place into database
-app.get("/scrape", funtion(req, res) {
-    request("", function(err, response, html) {
+app.get("/scrape", function(req, res) {
+    request("https://www.cnn.com", function(err, response, html) {
         // load html body from the requests into cheerio for scraping functionality
         var $ = cheerio.load(html);
 
@@ -103,7 +102,7 @@ app.post("/submit", function(req, res) {
         .then(function(dbUser) {
             res.json(dbUser);
         })
-        .catch(funciton(err) {
+        .catch(function(err) {
             res.json(err);
         });
 });
