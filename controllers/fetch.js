@@ -32,6 +32,17 @@ router.get("/", function(req, res) {
     }));
 });
 
+router.get("/saved/", function(req, res) {
+    db.Article.find({ 'saved': true}).sort({createdAt: -1}).then(function(dbArticle) {
+        var grabbedArticles = {
+            articles: dbArticle
+        }
+        res.render("saved", grabbedArticles); 
+    }).catch(function(err) {
+        res.json(err);
+    });
+})
+
 // Scrape data to place into database
 router.get("/scrape", function(req, res) {
     request("https://www.cnn.com", function(err, response, html) {
@@ -81,7 +92,7 @@ router.post("/api/articles/save:id", function(req, res) {
         });
 });
 
-// Saving a note to the article in the db
+// Unsaving a note to the article in the db
 router.post("/api/articles/unsave:id", function(req, res) {
     // Create a new note in db
     db.Note.create(req.body)
@@ -98,6 +109,17 @@ router.post("/api/articles/unsave:id", function(req, res) {
         });
 });
 
+// ---------> Place delete capability <------------
+router.delete("api/articles/:id", function(req,res) {
+    // instead of create db need delete functionality
+    db.Note.remove(req.body)
+        .then(function(dbArticle) {
+            res.json(dbArticle);
+        })
+        .catch(function(err) {
+            res.json(err);
+        });
+    });
     res.send("Scrape Complete");
 });
 
