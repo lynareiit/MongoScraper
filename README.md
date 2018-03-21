@@ -12,3 +12,5 @@ MongoScraper is my Week 19 homework assignment for the UC Berekely Coding Boot C
 <p>3. Create MongoDB database.</p>
 <h3>In Terminal, run node server.js to start the run the application.</p>
 <h4>In the preferred web browser, follow the link <https://localhost:3000></h4>
+
+<p>As soon as I can get this app working - you can find it deployed on a heroku app at <https://stormy-cove-45508.herokuapp.com/></p>
